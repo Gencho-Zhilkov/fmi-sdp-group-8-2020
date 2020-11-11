@@ -83,31 +83,91 @@ public:
 
     // Mutations
     void insertHead(const T& value) {
+        headPtr = new DNode<T>(value, nullptr, headPtr);
+        if (headPtr->next) {
+            headPtr->next->prev = headPtr;
+        }
     }
 
     void insertBefore(iterator it, const T& value) {
-        // TODO
+        if(it == begin()) {
+            insertHead(value);
+        } else if(it == end()) {
+            // end is invalid, so we cannot insert before it.
+            throw std::domain_error("Insert before end of list!");
+        } else {
+            auto node = it.node, prev = node->prev;
+            node->prev = new DNode(value, prev, node);
+            prev->next = node->prev;
+        }
     }
 
     void insertAfter(iterator it, const T& value) {
-        // TODO
+        if(it == end()) {
+            throw std::domain_error("Insert after end of list!");
+        }
+        auto node = it.node, next = node->next;
+        node->next = new DNode(value, node, next);
+        if (next != nullptr) {
+            next->prev = node->next;
+        }
     }
 
     void removeHead() {
-        // TODO
+        if (empty()) {
+            throw std::domain_error("Remove from empty list!");
+        }
+        auto temp = headPtr;
+        headPtr = headPtr->next;
+        if (headPtr != nullptr) {
+            headPtr->prev = nullptr;
+        }
+        delete temp;
     }
 
     void removeBefore(iterator it) {
-        // TODO
+        if (it == begin()) {
+            throw std::domain_error("Remove before start of list!");
+        }
+        auto node = it.node, prev = node->prev;
+        node->prev = prev->prev;
+        if (node->prev != nullptr) {
+            node->prev->next = node;
+        } else {
+            headPtr = node;
+        }
+        delete prev;
     }
 
     void removeAfter(iterator it) {
-        // TODO
+        auto node = it.node, next = node->next;
+        if (next == nullptr) {
+            throw std::domain_error("Remove after last list element!");
+        }
+        node->next = next->next;
+        if (next->next) {
+            next->next->prev = node;
+        }
+        delete next;
     }
 
     void removeAt(iterator it) {
-        // TODO
+        if (it == end()) {
+            throw std::domain_error("Remove at end of list!");
+        }
+        auto node = it.node, prev = node->prev, next = node->next;
+        delete node;
+        if (prev != nullptr) {
+            prev->next = next;
+        } else {
+            headPtr = next;
+        }
+
+        if (next != nullptr) {
+            next->prev = prev;
+        }
         // Question: what do we do with it.node?
+        it.node = next;
     }
 
     // Iterators
