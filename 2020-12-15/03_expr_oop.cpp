@@ -59,6 +59,10 @@ public:
         lhs = new Value(lval);
     }
 
+    BinOp(const int lval, Expression *rhs): rhs(rhs) {
+        lhs = new Value(lval);
+    }
+
     BinOp(Expression *lhs, Expression *rhs): lhs(lhs), rhs(rhs) {}
 };
 
